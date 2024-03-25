@@ -68,11 +68,18 @@ setInterval(() => {
     // Automatically generate reputation points if there are hired customers
     if (gameData.workers.customer > 0) {
         gameData.reputation += REPUTATION_PER_CLICK;
-        checkLevelUp();
+        checkLevelUpCustomer();
     }
     
     updateDisplay();
 }, 1000); // Update every second
+
+function checkLevelUpCustomer() {
+    if (gameData.reputation >= REPUTATION_PER_LEVEL * gameData.level) {
+        gameData.level++;
+        gameData.reputation = 0;
+    }
+}
 
 function updateDisplay() {
     cashDisplay.textContent = gameData.cash;
