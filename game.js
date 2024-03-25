@@ -35,7 +35,7 @@ const WORKER_EFFICIENCY = {
 const WORKER_COSTS = {
     cashier: 100,
     shelfStocker: 150,
-    customer: 200,
+    customer: 200, // Adjusted cost for hiring a customer
     skilledCashier: 300,
     skilledStocker: 350
 };
@@ -64,6 +64,13 @@ setInterval(() => {
     // Workers generate cash/shelves filled automatically
     gameData.cash += (gameData.workers.cashier + gameData.workers.skilledCashier * WORKER_EFFICIENCY.skilledCashier);
     gameData.shelvesFilled += (gameData.workers.shelfStocker + gameData.workers.skilledStocker * WORKER_EFFICIENCY.skilledStocker);
+    
+    // Automatically generate reputation points if there are hired customers
+    if (gameData.workers.customer > 0) {
+        gameData.reputation += REPUTATION_PER_CLICK;
+        checkLevelUp();
+    }
+    
     updateDisplay();
 }, 1000); // Update every second
 
@@ -90,22 +97,19 @@ window.onload = loadGame;
 
 // Example of how to hire a worker
 function hireWorker(workerType) {
-    if (gameData.cash >= WORKER_COSTS[workerType]) {
+    if (workerType === 'customer') { // Check if hiring a customer
         gameData.cash -= WORKER_COSTS[workerType];
         gameData.workers[workerType]++;
         saveGame();
         updateDisplay();
     } else {
-        console.log("Not enough cash to hire:", workerType);
-    }
-}
-
-// Implementing the customer worker effect
-function activateCustomer() {
-    if (gameData.workers.customer > 0) {
-        // Simulate clicks for 10 seconds
-        for (let i = 0; i < 10; i++) {
-            setTimeout(clickShelf, i * 1000);
+        if (gameData.cash >= WORKER_COSTS[workerType]) {
+            gameData.cash -= WORKER_COSTS[workerType];
+            gameData.workers[workerType]++;
+            saveGame();
+            updateDisplay();
+        } else {
+            console.log("Not enough cash to hire:", workerType);
         }
     }
 }
